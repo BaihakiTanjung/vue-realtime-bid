@@ -23,7 +23,7 @@ export function useAuth() {
     (_user) => (user.value = _user as never)
   );
 
-  console.log(user)
+  console.log(user);
 
   onUnmounted(unsubscribe);
   const isLogin = computed(() => user.value !== null);
@@ -43,18 +43,16 @@ const messagesQuery = messagesCollection
   .orderBy("createdAt", "desc")
   .limit(100);
 // // const filter = new Filter();
+const messagesQueryLast = messagesCollection.orderBy("price", "desc").limit(1);
 
 export function useBid() {
   const priceList = ref();
   const unsubscribe = messagesQuery.onSnapshot((snapshot) => {
-    console.log(snapshot.docs)
     priceList.value = snapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
       .reverse();
   });
   onUnmounted(unsubscribe);
-
-  console.log("last", priceList)
 
   const { user, isLogin } = useAuth();
   const sendPrice = (price: number) => {
@@ -68,5 +66,12 @@ export function useBid() {
     });
   };
 
-  return { priceList, sendPrice };
+  const lastPrice = ref();
+  lastPrice.value = messagesQueryLast.onSnapshot((snapshot) => {
+    lastPrice.value = snapshot.docs[0].data().price;
+  });
+
+  console.log("last", lastPrice);
+
+  return { priceList, sendPrice, lastPrice };
 }

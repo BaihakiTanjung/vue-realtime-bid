@@ -16,7 +16,7 @@
           </p>
           <div class="flex item-center justify-between mt-3">
             <div>
-              <div class="custom-number-input h-10 w-100 mr-3">
+              <div v-if="typeof lastPrice === 'number'" class="custom-number-input h-10 w-100 mr-3">
                 <div
                   class="
                     flex flex-row
@@ -99,6 +99,7 @@
         </div>
       </div>
     </div>
+    <!-- {{ lastPrice }} -->
     <h4
       v-for="d in priceList"
       :key="d.id"
@@ -115,10 +116,10 @@ import { useBid } from "@/firebase";
 
 export default {
   setup() {
-    const { priceList, sendPrice } = useBid();
+    const { priceList, sendPrice, lastPrice } = useBid();
 
     const data = reactive({
-      bid: 0,
+      bid : 0,
       nominal: 1000000,
     });
 
@@ -134,18 +135,14 @@ export default {
     const submitBid = () => {
       sendPrice(data.bid);
     };
+    
+    watch(
+      lastPrice,
+      (newVal) => {
+        data.bid = newVal;
+      }
+    );
 
-    onMounted(() => {
-      console.log("harga", priceList);
-      // priceList.forEach((element) => {
-      //   console.log(element);
-      // });
-      // data.bid = 1000000000;
-    });
-
-    watch(priceList.value, (price) => {
-      console.log("bid", price.value._rawValue);
-    });
 
     const formatPrice = (price: number) => {
       return (
@@ -168,6 +165,7 @@ export default {
       formatBidInput,
       submitBid,
       priceList,
+      lastPrice,
     };
   },
 };
