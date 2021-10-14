@@ -27,11 +27,5 @@ module.exports = {
         jest: true
       }
     }
-  ],
-  "prettier/prettier": [
-    "error",
-    {
-      endOfLine: "auto"
-    }
   ]
 };
